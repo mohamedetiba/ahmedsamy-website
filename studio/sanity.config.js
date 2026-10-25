@@ -4,12 +4,6 @@ import { visionTool } from '@sanity/vision';
 import { schemaTypes, singletons } from './schemas/index.js';
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || '029m0vsv';
-// المسار بيتحسب من الرابط نفسه، فيشتغل على /studio وعلى github.io/اسم-الريبو/studio
-const basePath = (() => {
-  if (typeof window === 'undefined') return '/studio';
-  const m = window.location.pathname.match(/^(.*?\/studio)(\/|$)/);
-  return m ? m[1] : '/';
-})();
 const dataset = process.env.SANITY_STUDIO_DATASET || 'production';
 
 const single = (S, id, title) => S.listItem().title(title).id(id).child(S.document().schemaType(id).documentId(id).title(title));
@@ -19,7 +13,6 @@ export default defineConfig({
   title: 'موقع د. أحمد سامي',
   projectId,
   dataset,
-  basePath,
   plugins: [
     structureTool({
       structure: (S) => S.list().title('المحتوى').items([
