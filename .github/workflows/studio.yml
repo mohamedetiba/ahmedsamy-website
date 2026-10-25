@@ -1,9 +1,7 @@
-name: Deploy Sanity Studio
+name: Deploy Studio to sanity.studio (optional)
 
+# لوحة التحكم بتترفع أصلًا مع الموقع على /studio. ده اختياري لو عايز نسخة على ahmedsamy.sanity.studio
 on:
-  push:
-    branches: [main]
-    paths: ['studio/**', '.github/workflows/studio.yml']
   workflow_dispatch:
 
 jobs:
@@ -14,7 +12,8 @@ jobs:
         working-directory: studio
     env:
       SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
-      SANITY_STUDIO_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
+      SANITY_STUDIO_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID || '029m0vsv' }}
+      SANITY_STUDIO_BASEPATH: /
       SANITY_STUDIO_DATASET: ${{ vars.SANITY_DATASET || 'production' }}
       SANITY_STUDIO_HOST: ${{ vars.SANITY_STUDIO_HOST || 'ahmedsamy' }}
     steps:

@@ -28,14 +28,23 @@ jobs:
         with:
           node-version: 24
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            studio/package-lock.json
       - run: npm ci
+      - run: npm ci
+        working-directory: studio
       - uses: actions/configure-pages@v6
         id: pages
       - name: Build
-        run: npm run build && node scripts/rebase.mjs
+        run: |
+          npm run build
+          node scripts/rebase.mjs
+          cd studio && SANITY_STUDIO_BASEPATH="${BASE_PATH}/studio" npx sanity build ../dist/studio -y
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
-          PUBLIC_SANITY_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
+          PUBLIC_SANITY_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID || '029m0vsv' }}
+          SANITY_STUDIO_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID || '029m0vsv' }}
           PUBLIC_SANITY_DATASET: ${{ vars.SANITY_DATASET || 'production' }}
           SITE_URL: ${{ vars.SITE_URL || 'https://ahmedsamyelmoghazy.com' }}
       - uses: actions/upload-pages-artifact@v5

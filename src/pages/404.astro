@@ -1,6 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
 ---
+<script is:inline>
+  // روابط لوحة التحكم الداخلية: ارجع لأولها بدل صفحة 404
+  (function(){var i=location.pathname.indexOf('/studio/');if(i>-1&&location.pathname.length>i+8){location.replace(location.pathname.slice(0,i+8));}})();
+</script>
 <Base title="الصفحة مش موجودة" description="الصفحة اللي بتدوري عليها مش موجودة." seo={{ noIndex: true }}>
 <main class="wrap inner">
   <section class="page-hero">

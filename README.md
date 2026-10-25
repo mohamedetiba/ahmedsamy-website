@@ -3,7 +3,7 @@
 الموقع مبني بـ **Astro** ومحتواه بيتدار من **Sanity**، وبيتنشر أوتوماتيك على **GitHub Pages**.
 
 - الموقع: `https://ahmedsamyelmoghazy.com`
-- لوحة التحكم (بعد الإعداد): `https://ahmedsamy.sanity.studio`
+- لوحة التحكم: `https://ahmedsamyelmoghazy.com/studio/` (ادخل بحساب Sanity)
 
 ## بيشتغل إزاي
 
@@ -14,48 +14,17 @@
 
 لو Sanity لسه مش متوصل، الموقع بيشتغل عادي بالمحتوى الأساسي الموجود في `src/content/fallback.mjs`.
 
-## الإعداد لأول مرة (مرة واحدة بس)
+## الإعداد (اللي اتعمل واللي فاضل)
 
-### 1) Sanity
-1. اعمل حساب على [sanity.io](https://www.sanity.io) (ممكن بجوجل).
-2. من [sanity.io/manage](https://www.sanity.io/manage) اعمل مشروع جديد باسم `Dr Ahmed Samy`، والـ dataset تبقى `production` و Public.
-3. انسخ الـ **Project ID**.
-4. من المشروع ← **API** ← **Tokens** اعمل توكنين:
-   - `github-deploy` بصلاحية **Deploy Studio**
-   - `github-seed` بصلاحية **Editor**
+**اتعمل:**
+- مشروع Sanity باسم `Dr Ahmed Samy` (Project ID: `029m0vsv`، dataset: `production`).
+- كل المحتوى الحالي اتنقل جوه Sanity واتنشر.
+- لوحة التحكم بتترفع مع الموقع نفسه على `/studio/` (مفيش أي توكن محتاج يتحط في GitHub).
+- CORS للدومين ولـ github.io.
 
-### 2) GitHub (إعدادات الـ repo)
-**Settings ← Secrets and variables ← Actions**
-
-| النوع | الاسم | القيمة |
-|---|---|---|
-| Variable | `SANITY_PROJECT_ID` | الـ Project ID |
-| Secret | `SANITY_AUTH_TOKEN` | توكن `github-deploy` |
-| Secret | `SANITY_WRITE_TOKEN` | توكن `github-seed` |
-
-**Settings ← Pages ← Source:** اختار **GitHub Actions**.
-
-### 3) نقل المحتوى ورفع لوحة التحكم
-من تاب **Actions**:
-1. شغّل **Deploy Sanity Studio** (Run workflow) ← لوحة التحكم هتبقى على `ahmedsamy.sanity.studio`.
-2. شغّل **Seed Sanity (first time)** ← بيرفع كل المحتوى والصور الحالية جوه Sanity وبيعيد بناء الموقع.
-
-### 4) النشر الأوتوماتيك لما تعمل Publish
-1. على GitHub: **Settings (حسابك) ← Developer settings ← Fine-grained tokens ← Generate**، اختار الـ repo ده بس، وصلاحية **Contents: Read and write**.
-2. على Sanity: المشروع ← **API ← Webhooks ← Create webhook**:
-   - URL: `https://api.github.com/repos/<OWNER>/<REPO>/dispatches`
-   - Dataset: `production`، Trigger on: Create, Update, Delete
-   - Filter: `!(_id in path("drafts.**"))`
-   - Projection: `{"event_type": "sanity-publish"}`
-   - HTTP method: `POST`
-   - HTTP Headers:
-     - `Authorization`: `Bearer <توكن جيت هب>`
-     - `Accept`: `application/vnd.github+json`
-
-### 5) الدومين
-**Settings ← Pages ← Custom domain:** `ahmedsamyelmoghazy.com` وفعّل **Enforce HTTPS**.
-
-وعند شركة الدومين عدّل الـ DNS:
+**فاضل:**
+1. **GitHub Pages:** Settings ← Pages ← Source: **GitHub Actions**.
+2. **الدومين:** Settings ← Pages ← Custom domain: `ahmedsamyelmoghazy.com` وفعّل Enforce HTTPS، وعدّل الـ DNS:
 
 | Type | Name | Value |
 |---|---|---|
@@ -63,12 +32,18 @@
 | A | @ | 185.199.109.153 |
 | A | @ | 185.199.110.153 |
 | A | @ | 185.199.111.153 |
-| CNAME | www | `<OWNER>.github.io` |
+| CNAME | www | `mohamedetiba.github.io` |
 
-امسح أي A record قديم بيشاور على الاستضافة القديمة.
+3. **نشر أوتوماتيك لما تعمل Publish (اختياري، من غيره الموقع بيتحدث مرة كل يوم):**
+   - GitHub: Settings (حسابك) ← Developer settings ← Fine-grained tokens ← اختار الـ repo ده بس وصلاحية **Contents: Read and write**.
+   - Sanity: [sanity.io/manage](https://www.sanity.io/manage) ← Dr Ahmed Samy ← API ← Webhooks ← Create:
+     - URL: `https://api.github.com/repos/mohamedetiba/ahmedsamy-website/dispatches`
+     - Trigger on: Create, Update, Delete — Filter: `!(_id in path("drafts.**"))`
+     - Projection: `{"event_type": "sanity-publish"}` — Method: `POST`
+     - Headers: `Authorization: Bearer <توكن جيت هب>` و `Accept: application/vnd.github+json`
+   - أو من غير webhook: تاب Actions ← Deploy site ← Run workflow.
 
-### 6) جوجل
-ضيف الموقع في [Google Search Console](https://search.google.com/search-console) وابعت الـ sitemap: `https://ahmedsamyelmoghazy.com/sitemap-index.xml`
+4. **جوجل:** Google Search Console ← ابعت `https://ahmedsamyelmoghazy.com/sitemap-index.xml`
 
 ## إدارة السيو من Sanity
 

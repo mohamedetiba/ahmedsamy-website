@@ -5,7 +5,9 @@ import { createImageUrlBuilder } from '@sanity/image-url';
 import { toHTML } from '@portabletext/to-html';
 import * as fb from '../content/fallback.mjs';
 
-const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || process.env.PUBLIC_SANITY_PROJECT_ID || '';
+// Project ID مش سر، عادي يكون في الكود. لو عايز تشغل الموقع من غير Sanity خالص: PUBLIC_SANITY_PROJECT_ID=none
+const envId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || process.env.PUBLIC_SANITY_PROJECT_ID || '029m0vsv';
+const projectId = envId === 'none' ? '' : envId;
 const dataset = import.meta.env.PUBLIC_SANITY_DATASET || process.env.PUBLIC_SANITY_DATASET || 'production';
 
 export const sanityEnabled = Boolean(projectId);
