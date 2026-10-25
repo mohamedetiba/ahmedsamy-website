@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getData, img, richText } from '../../lib/data.mjs';
+export async function getStaticPaths() {
+  const { posts } = await getData();
+  return posts.map((p) => ({ params: { slug: p.slug }, props: { slug: p.slug } }));
+}
+const { slug } = Astro.props;
+const { settings, posts, services } = await getData();
+const p = posts.find((x) => x.slug === slug);
+const svc = services.find((s) => s.slug === p.service);
+const site = settings.siteUrl.replace(/\/$/, '');
+const cover = img(p.cover, 1200);
+const fmt = (d) => d ? new Date(d).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+const ld = [{
+  '@context': 'https://schema.org', '@type': 'Article', headline: p.title, description: p.excerpt,
+  datePublished: p.publishedAt, author: { '@id': site + '/#physician' }, publisher: { '@id': site + '/#physician' },
+  mainEntityOfPage: `${site}/blog/${p.slug}/`, image: cover || site + '/img/doctor-desk.webp',
+}];
+---
+<Base seo={p.seo} title={`${p.title} | ${settings.doctorName}`} description={p.excerpt} image={cover} type="article" jsonLd={ld} current="blog">
+<main class="wrap inner">
+  <nav class="crumbs" aria-label="مسار الصفحة"><a href="/">الرئيسية</a><span>/</span><a href="/blog/">مقالات</a><span>/</span><span aria-current="page">{p.title}</span></nav>
+  <section class="page-hero narrow">
+    <div class="mesh" aria-hidden="true"><i></i><i></i><i></i></div>
+    {p.publishedAt && <time class="rise" datetime={p.publishedAt}>{fmt(p.publishedAt)}</time>}
+    <h1 class="rise" style="--d:90ms">{p.title}</h1>
+    <p class="lede rise" style="--d:180ms">{p.excerpt}</p>
+  </section>
+  {cover && <div class="cover" data-reveal><img src={cover} alt={p.title} loading="lazy"></div>}
+  <article class="prose narrow" data-reveal set:html={richText(p.body)} />
+  <div class="post-cta" data-reveal>
+    <div><b>عايزة تطمني على حالتك؟</b><span>احجزي كشف مع {settings.doctorName}{svc ? ` أو اقرئي عن ${svc.title}` : ''}.</span></div>
+    <div class="ctas"><a class="btn btn-main" href="/#book">احجزي موعدك</a>{svc && <a class="btn btn-soft" href={`/services/${svc.slug}/`}>{svc.title}</a>}</div>
+  </div>
+</main>
+</Base>

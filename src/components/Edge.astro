@@ -1,0 +1,6 @@
+---
+// منحنى ناعم بين السكاشن (مستوحى من قوس اللوجو)
+const { dir = 'top', fill = '#ffffff', d } = Astro.props;
+const path = d || (dir === 'top' ? 'M0 70 C 360 0 1080 0 1440 70 Z' : 'M0 0 H1440 C 1080 70 360 70 0 0 Z');
+---
+<div class="edge" aria-hidden="true"><svg viewBox="0 0 1440 70" preserveAspectRatio="none"><path d={path} fill={fill}/></svg></div>

@@ -1,0 +1,41 @@
+name: Deploy Sanity Studio
+
+on:
+  push:
+    branches: [main]
+    paths: ['studio/**', '.github/workflows/studio.yml']
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: studio
+    env:
+      SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+      SANITY_STUDIO_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
+      SANITY_STUDIO_DATASET: ${{ vars.SANITY_DATASET || 'production' }}
+      SANITY_STUDIO_HOST: ${{ vars.SANITY_STUDIO_HOST || 'ahmedsamy' }}
+    steps:
+      - name: Check setup
+        id: check
+        run: |
+          if [ -z "$SANITY_AUTH_TOKEN" ] || [ -z "$SANITY_STUDIO_PROJECT_ID" ]; then
+            echo "::notice::لوحة التحكم مش هتترفع لسه: ضيف SANITY_PROJECT_ID (Variable) و SANITY_AUTH_TOKEN (Secret) في إعدادات الـ repo."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v7
+        if: steps.check.outputs.ready == 'true'
+      - uses: actions/setup-node@v7
+        if: steps.check.outputs.ready == 'true'
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: studio/package-lock.json
+      - run: npm ci
+        if: steps.check.outputs.ready == 'true'
+      - run: npx sanity deploy -y
+        if: steps.check.outputs.ready == 'true'

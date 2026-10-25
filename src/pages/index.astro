@@ -1,0 +1,193 @@
+---
+import Base from '../layouts/Base.astro';
+import Book from '../components/Book.astro';
+import Edge from '../components/Edge.astro';
+import { getData, img } from '../lib/data.mjs';
+
+const { settings, home, services, clinics, faqs, stories, packages, posts } = await getData();
+const featured = services.find((s) => s.featured) || services[0];
+const rest = services.filter((s) => s !== featured);
+const faqLd = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+const clinicsLabel = clinics.length === 1 ? 'عيادة واحدة' : clinics.length === 2 ? 'عيادتين' : `${clinics.length} عيادات`;
+---
+<Base seo={home.seo} jsonLd={[faqLd]}>
+<main class="wrap" id="top">
+
+  <section class="hero" aria-labelledby="h1">
+    <div class="mesh" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="hero-copy">
+      <span class="kicker rise" style="--d:0ms"><span class="dot pulse"></span>{home.kicker}</span>
+      <h1 id="h1" class="rise" style="--d:90ms">{home.titleLine}<br><span class="hl">{home.titleHighlight}</span></h1>
+      <p class="role rise" style="--d:180ms">{settings.role}</p>
+      <p class="lede rise" style="--d:240ms">{home.lede}</p>
+      <div class="ctas rise" style="--d:320ms">
+        <a class="btn btn-main" href="#book">احجزي موعدك الآن</a>
+        <a class="btn btn-soft" href="/services/online-consultation/">استشارة أونلاين</a>
+      </div>
+      <div class="phones rise" style="--d:380ms">للحجز والاستفسار: {settings.phones.map((p) => <b>{p}</b>)}</div>
+    </div>
+    <div class="stage rise" id="stage" style="--d:120ms">
+      <div class="blobring"></div>
+      <div class="blobframe"><img src={img(home.heroImage, 900)} alt={`${settings.doctorName} في عيادته`} width="760" height="848" fetchpriority="high"></div>
+      <span class="float f-circle" data-depth="18"></span>
+      <span class="float f-dot" data-depth="30"></span>
+      <svg class="float f-tri" data-depth="24" viewBox="0 0 40 40" aria-hidden="true"><path d="M12 6 Q14 4 16 6 L33 30 Q34 33 31 33 H8 Q5 33 6 30 Z" transform="rotate(-18 20 20)" fill="none" stroke="#de82c4" stroke-width="3" stroke-linejoin="round"/></svg>
+      <svg class="float f-tri2" data-depth="12" viewBox="0 0 40 40" aria-hidden="true"><path d="M12 6 Q14 4 16 6 L33 30 Q34 33 31 33 H8 Q5 33 6 30 Z" transform="rotate(24 20 20)" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/></svg>
+      <div class="chip"><span class="dot pulse"></span><div><b>{clinicsLabel}</b>{clinics.map((c) => c.locality).join(' · ')}</div></div>
+    </div>
+  </section>
+
+  <div class="strip" aria-label="التخصصات">
+    {services.map((s, i) => <a href={`/services/${s.slug}/`} data-reveal={i % 4}><i class="dot"></i>{s.title}</a>)}
+  </div>
+
+  <Edge dir="top" />
+  <div class="band band-white">
+    <section class="wrap about" id="about" aria-labelledby="about-h">
+      <div class="pic" data-reveal><div class="blobframe"><img src={img(home.aboutImage, 900)} alt={`${settings.doctorName} في عيادته`} width="800" height="532" loading="lazy"></div></div>
+      <div data-reveal="1">
+        <span class="kicker"><span class="dot"></span>عن الدكتور</span>
+        <h2 id="about-h" style="margin-top:14px">{home.aboutTitle}</h2>
+        <p class="lede" style="margin-top:12px">{home.aboutText}</p>
+        <div class="vals">
+          {home.values.map((v) => <div class="val"><span class="dot"></span><div><h3>{v.title}</h3><p>{v.text}</p></div></div>)}
+        </div>
+      </div>
+    </section>
+  </div>
+  <Edge dir="bottom" />
+
+  <section id="services" aria-labelledby="svc-h">
+    <div class="head" data-reveal>
+      <span class="kicker"><span class="dot"></span>الخدمات</span>
+      <h2 id="svc-h">رعاية متكاملة لصحة المرأة وحلم الأمومة</h2>
+    </div>
+    <div class="bento">
+      <article class="card big" data-reveal>
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/></svg></span>
+        <span class="tag"><i class="dot"></i>{featured.tag}</span>
+        <h3><a class="stretch" href={`/services/${featured.slug}/`}>{featured.title}</a></h3>
+        <p>{featured.short}</p>
+        {featured.points?.length > 0 && <ul>{featured.points.map((p) => <li><i class="dot"></i>{p}</li>)}</ul>}
+        <span class="more">اعرفي أكتر ←</span>
+      </article>
+      {rest.map((s, i) => (
+        <article class:list={['card', { wide: s.wide }]} data-reveal={(i % 3) + 1}>
+          <span class="tag"><i class="dot"></i>{s.tag}</span>
+          <h3><a class="stretch" href={`/services/${s.slug}/`}>{s.title}</a></h3>
+          <p>{s.short}</p>
+          <span class="more">اعرفي أكتر ←</span>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  {packages.length > 0 && <>
+  <Edge d="M0 70 C 480 10 960 10 1440 70 Z" />
+  <div class="band band-white">
+    <section class="wrap" aria-labelledby="pk-h">
+      <div class="head" data-reveal>
+        <span class="kicker"><span class="dot"></span>الباكدجات</span>
+        <h2 id="pk-h">ابدئي من المكان الصح</h2>
+        <p class="lede">باكدجات واضحة لأكتر الحالات اللي بنقابلها، علشان تعرفي هتبدأي منين.</p>
+      </div>
+      <div class="packs">
+        {packages.map((p, i) => <article class="pack" data-reveal={i}><span class="for">{p.forWho}</span><h3>{p.title}</h3><ul>{(p.items || []).map((it) => <li><i class="dot"></i>{it}</li>)}</ul></article>)}
+      </div>
+      <p class="note">التكلفة بتتحدد بعد الكشف وتقييم الحالة. اسألي عن التفاصيل عند الحجز.</p>
+    </section>
+  </div>
+  <Edge d="M0 0 H1440 C 960 60 480 60 0 0 Z" />
+  </>}
+
+  {stories.length > 0 &&
+  <section id="joy" aria-labelledby="joy-h">
+    <div class="head" data-reveal>
+      <span class="kicker"><span class="dot pulse"></span>فرحة العيادة</span>
+      <h2 id="joy-h">حكايات انتهت بفرحة</h2>
+      <p class="lede">حالات حقيقية من العيادة، بنشاركها علشان كل واحدة لسه مستنية تعرف إن في أمل.</p>
+    </div>
+    <div class="album">
+      {stories.map((s, i) => (
+        <article class="story" data-reveal={i}>
+          <span class="badge"><span>{s.badge}{s.badgeUnit && <small>{s.badgeUnit}</small>}</span></span>
+          <span class="type"><i class="dot"></i>{s.type}</span>
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+        </article>
+      ))}
+    </div>
+  </section>}
+
+  <Edge d="M0 70 C 300 0 1140 0 1440 70 Z" fill="#efe3f7" />
+  <div class="band band-glow" id="online">
+    <section class="wrap online" aria-labelledby="on-h">
+      <div data-reveal>
+        <span class="kicker"><span class="dot"></span>استشارة أونلاين</span>
+        <h2 id="on-h" style="margin-top:14px">برا مصر أو في محافظة بعيدة؟ ابدئي من بيتك</h2>
+        <p class="lede" style="margin-top:12px">الدكتور بيراجع تحاليلك وأشعتك، ويسمع منك الأعراض، ويحدد خطة مبدئية للعلاج، أو يجهزك لعملية لما ترجعي.</p>
+        <ol class="steps">
+          <li><div><b>ابعتي لنا على واتساب</b><span>الاسم والدولة وملخص الحالة.</span></div></li>
+          <li><div><b>جهزي تقاريرك</b><span>التحاليل والسونار والأشعات اللي عملتيها.</span></div></li>
+          <li><div><b>احجزي معاد المكالمة</b><span>مواعيد صباحية ومسائية تناسب فرق التوقيت.</span></div></li>
+          <li><div><b>استلمي خطتك</b><span>ملخص واضح للحالة والخطوة الجاية.</span></div></li>
+        </ol>
+        <a class="btn btn-wa" href={`https://wa.me/${settings.whatsapp}?text=${encodeURIComponent('أهلاً، حابة أحجز استشارة أونلاين مع د. أحمد سامي')}`} target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>احجزي استشارة أونلاين</a>
+      </div>
+      <div class="pic" data-reveal="1"><div class="blobframe"><img src={img(home.onlineImage, 900)} alt={`${settings.doctorName} يراجع حالة`} width="800" height="532" loading="lazy"></div></div>
+    </section>
+  </div>
+  <Edge d="M0 0 H1440 C 1140 70 300 70 0 0 Z" fill="#efe3f7" />
+
+  <section id="clinics" aria-labelledby="cl-h">
+    <div class="head" data-reveal>
+      <span class="kicker"><span class="dot"></span>العيادات والمواعيد</span>
+      <h2 id="cl-h">{clinicsLabel} {clinics.length === 2 ? 'قريبين' : 'قريبة'} منك</h2>
+      <p class="lede">الحجز مسبق بالتليفون أو واتساب.</p>
+    </div>
+    <div class="clinics">
+      {clinics.map((c, i) => (
+        <article class="clinic" data-reveal={i}>
+          <span class="city"><i class="dot"></i>{c.city}</span><h3>{c.name}</h3>
+          <address>{c.address}</address>
+          <div class="hours">{(c.days || []).map((d) => <span>{d}</span>)}<span>{c.hours}</span></div>
+          {c.mapUrl && <a class="map" href={c.mapUrl} target="_blank" rel="noopener">افتحي على الخريطة ←</a>}
+        </article>
+      ))}
+    </div>
+  </section>
+
+  {posts.length > 0 &&
+  <section id="blog" aria-labelledby="bl-h">
+    <div class="head" data-reveal>
+      <span class="kicker"><span class="dot"></span>مقالات</span>
+      <h2 id="bl-h">اعرفي أكتر عن حالتك</h2>
+    </div>
+    <div class="posts">
+      {posts.slice(0, 3).map((p, i) => (
+        <article class="post-card" data-reveal={i}>
+          <h3><a class="stretch" href={`/blog/${p.slug}/`}>{p.title}</a></h3>
+          <p>{p.excerpt}</p>
+          <span class="more">اقرئي المقال ←</span>
+        </article>
+      ))}
+    </div>
+    <p class="note"><a href="/blog/">كل المقالات ←</a></p>
+  </section>}
+
+  <section id="faq" aria-labelledby="faq-h">
+    <div class="head" data-reveal>
+      <span class="kicker"><span class="dot"></span>أسئلة شائعة</span>
+      <h2 id="faq-h">أسئلة بنسمعها كل يوم في العيادة</h2>
+    </div>
+    <div class="faq" data-reveal="1">
+      {faqs.map((f, i) => <details open={i === 0}><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+</main>
+<Book settings={settings} clinics={clinics} />
+</Base>

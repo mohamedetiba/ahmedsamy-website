@@ -1,0 +1,38 @@
+---
+const { settings, clinics } = Astro.props;
+---
+<section id="book" class="wrap book" aria-labelledby="book-h">
+  <div data-reveal>
+    <span class="kicker"><span class="dot pulse"></span>احجزي موعدك</span>
+    <h2 id="book-h" style="margin-top:14px">أنتِ أقرب مما تتخيلي</h2>
+    <p class="lede" style="margin-top:12px">املي البيانات وهتتفتح لك رسالة واتساب جاهزة للعيادة. فريق العيادة هيأكد معاكي المعاد.</p>
+    <div class="lines">
+      {settings.phones.map((p, i) => <div><span>خط الحجز {i + 1}</span><span><b id={`p${i}`}>{p}</b><button class="copy" type="button" data-copy={`p${i}`}>نسخ</button></span></div>)}
+    </div>
+  </div>
+  <form class="glass" id="bookForm" novalidate data-reveal="1" data-wa={settings.whatsapp}>
+    <div class="row2">
+      <label for="f-name">الاسم<input id="f-name" name="name" autocomplete="name" placeholder="اسمك"></label>
+      <label for="f-phone">رقم الموبايل<input id="f-phone" name="phone" inputmode="tel" autocomplete="tel" placeholder="01xxxxxxxxx" dir="ltr" style="text-align:right"></label>
+    </div>
+    <div class="row2">
+      <label for="f-branch">العيادة<select id="f-branch" name="branch">{clinics.map((c) => <option>{c.name} ({c.city})</option>)}<option>استشارة أونلاين</option></select></label>
+      <label for="f-service">سبب الزيارة<select id="f-service" name="service"><option>كشف نسا وتوليد</option><option>تأخر الحمل</option><option>الحقن المجهري</option><option>متابعة حمل</option><option>أورام ليفية / مناظير</option><option>أخرى</option></select></label>
+    </div>
+    <label for="f-note">ملاحظات (اختياري)<textarea id="f-note" name="note" placeholder="اليوم المناسب ليكي، أو ملخص سريع للحالة"></textarea></label>
+    <a class="btn btn-main" id="sendWa" href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noopener"><span class="dot pulse"></span>إرسال الحجز على واتساب</a>
+  </form>
+</section>
+<script>
+  const f = document.getElementById('bookForm');
+  const a = document.getElementById('sendWa');
+  if (f && a) {
+    const v = (id) => (document.getElementById(id)?.value || '').trim();
+    const build = () => {
+      const l = ['السلام عليكم، حابة أحجز موعد مع د. أحمد سامي.', 'الاسم: ' + (v('f-name') || '-'), 'الموبايل: ' + (v('f-phone') || '-'), 'العيادة: ' + v('f-branch'), 'سبب الزيارة: ' + v('f-service')];
+      if (v('f-note')) l.push('ملاحظات: ' + v('f-note'));
+      a.href = `https://wa.me/${f.dataset.wa}?text=` + encodeURIComponent(l.join('\n'));
+    };
+    f.addEventListener('input', build); f.addEventListener('change', build); f.addEventListener('submit', (e) => e.preventDefault()); build();
+  }
+</script>

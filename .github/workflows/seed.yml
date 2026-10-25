@@ -1,0 +1,34 @@
+name: Seed Sanity (first time)
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'استبدل المحتوى الموجود في Sanity بالمحتوى الأساسي؟ (خلي بالك، هيمسح تعديلاتك)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Upload content to Sanity
+        run: node scripts/seed.mjs ${{ inputs.force && '--force' || '' }}
+        env:
+          SANITY_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
+          SANITY_DATASET: ${{ vars.SANITY_DATASET || 'production' }}
+          SANITY_WRITE_TOKEN: ${{ secrets.SANITY_WRITE_TOKEN }}
+      - name: Rebuild the site
+        run: gh workflow run deploy.yml --ref main
+        env:
+          GH_TOKEN: ${{ github.token }}

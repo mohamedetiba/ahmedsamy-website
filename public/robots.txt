@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ahmedsamyelmoghazy.com/sitemap-index.xml

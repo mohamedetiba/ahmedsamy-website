@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getData } from '../../lib/data.mjs';
+const { settings, posts } = await getData();
+const fmt = (d) => d ? new Date(d).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+---
+<Base title={`مقالات | ${settings.doctorName}`} description="مقالات عن تأخر الإنجاب والحقن المجهري والأورام الليفية وجراحات المناظير ومتابعة الحمل من عيادة د. أحمد سامي المغازي." current="blog">
+<main class="wrap inner">
+  <nav class="crumbs" aria-label="مسار الصفحة"><a href="/">الرئيسية</a><span>/</span><span aria-current="page">مقالات</span></nav>
+  <section class="page-hero">
+    <div class="mesh" aria-hidden="true"><i></i><i></i><i></i></div>
+    <span class="kicker rise"><span class="dot pulse"></span>مقالات</span>
+    <h1 class="rise" style="--d:90ms">اعرفي أكتر عن حالتك</h1>
+    <p class="lede rise" style="--d:180ms">معلومات طبية مبسطة من العيادة، علشان تاخدي قرارك وإنتي فاهمة.</p>
+  </section>
+  {posts.length === 0
+    ? <p class="lede empty">مفيش مقالات منشورة لسه. أول مقال هيظهر هنا بمجرد نشره من لوحة التحكم.</p>
+    : <div class="posts">{posts.map((p, i) => (
+        <article class="post-card" data-reveal={i % 3}>
+          {p.publishedAt && <time datetime={p.publishedAt}>{fmt(p.publishedAt)}</time>}
+          <h2><a class="stretch" href={`/blog/${p.slug}/`}>{p.title}</a></h2>
+          <p>{p.excerpt}</p>
+          <span class="more">اقرئي المقال ←</span>
+        </article>))}</div>}
+</main>
+</Base>

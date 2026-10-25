@@ -1,0 +1,20 @@
+---
+const { settings, current = '' } = Astro.props;
+const links = [
+  { href: '/#about', label: 'عن الدكتور', id: 'about' },
+  { href: '/#services', label: 'الخدمات', id: 'services' },
+  { href: '/#joy', label: 'فرحة العيادة', id: 'joy' },
+  { href: '/blog/', label: 'مقالات', id: 'blog' },
+  { href: '/#clinics', label: 'العيادات', id: 'clinics' },
+  { href: '/#faq', label: 'أسئلة', id: 'faq' },
+];
+---
+<header class="site">
+  <nav class="nav" aria-label="القائمة الرئيسية">
+    <a class="brand" href="/"><img src="/img/logo-mark.png" alt="شعار د. أحمد سامي" width="238" height="295"><span><b>{settings.doctorName}</b><small>نسا وتوليد · حقن مجهري · مناظير</small></span></a>
+    <ul>
+      {links.map((l) => <li><a href={l.href} aria-current={current === l.id ? 'page' : undefined}>{l.label}</a></li>)}
+    </ul>
+    <a class="btn btn-main" href="/#book"><span class="dot pulse"></span><span class="txt">احجزي موعدك</span></a>
+  </nav>
+</header>
