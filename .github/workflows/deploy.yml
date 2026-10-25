@@ -3,7 +3,7 @@ name: Deploy site
 on:
   push:
     branches: [main]
-    paths-ignore: ['studio/**', '*.md']
+    paths-ignore: ['*.md']
   repository_dispatch:
     types: [sanity-publish]   # بيتبعت من webhook في Sanity أول ما حد يعمل Publish
   schedule:
