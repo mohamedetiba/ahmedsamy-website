@@ -40,7 +40,7 @@ jobs:
         run: |
           npm run build
           node scripts/rebase.mjs
-          cd studio && SANITY_STUDIO_BASEPATH="${BASE_PATH}/studio" npx sanity build ../dist/studio -y
+          cd studio && SANITY_STUDIO_BASEPATH="${BASE_PATH}/studio" SANITY_STUDIO_ROUTER_BASE="${BASE_PATH}/studio" npx sanity build ../dist/studio -y
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
           PUBLIC_SANITY_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID || '029m0vsv' }}

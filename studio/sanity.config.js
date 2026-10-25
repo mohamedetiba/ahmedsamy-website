@@ -5,6 +5,8 @@ import { schemaTypes, singletons } from './schemas/index.js';
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || '029m0vsv';
 const dataset = process.env.SANITY_STUDIO_DATASET || 'production';
+// لازم يطابق المسار اللي لوحة التحكم مرفوعة عليه (بيتظبط وقت البناء)
+const basePath = process.env.SANITY_STUDIO_ROUTER_BASE || '/studio';
 
 const single = (S, id, title) => S.listItem().title(title).id(id).child(S.document().schemaType(id).documentId(id).title(title));
 
@@ -13,6 +15,7 @@ export default defineConfig({
   title: 'موقع د. أحمد سامي',
   projectId,
   dataset,
+  basePath,
   plugins: [
     structureTool({
       structure: (S) => S.list().title('المحتوى').items([
